@@ -142,10 +142,6 @@ func (tx *tx) CreateMapReduceJobs(stmt *influxql.SelectStatement, tagKeys []stri
 
 			// create mappers for each shard we need to hit
 			for _, sg := range shardGroups {
-				if len(sg.Shards) != 1 { // we'll only have more than 1 shard in a group when RF < # servers in cluster
-					// TODO: implement distributed queries.
-					panic("distributed queries not implemented yet and there are too many shards in this group")
-				}
 
 				shard := sg.Shards[0]
 
