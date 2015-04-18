@@ -3,6 +3,7 @@ package influxdb
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"sort"
 	"time"
 
@@ -143,7 +144,16 @@ func (tx *tx) CreateMapReduceJobs(stmt *influxql.SelectStatement, tagKeys []stri
 			// create mappers for each shard we need to hit
 			for _, sg := range shardGroups {
 
-				shard := sg.Shards[0]
+				// pick a shard to query
+				shard := sg.Shards[rand.Intn(len(sg.Shards))]
+
+				// if any of the shards are local, use it instead of streaming the data from another data node
+				for _, sh := range sg.Shards {
+					if sh.store != nil {
+						shard = sh
+						break
+					}
+				}
 
 				var mapper influxql.Mapper
 
